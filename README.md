@@ -1,6 +1,6 @@
 # Plug-n-Copy
 
-The Plug-n-Copy is a powershell script that allows you to secretly copy files from a USB drive to a destination folder when it's plugged in.
+Plug-n-Copy is a powershell script that allows you to secretly copy files from a USB drive to a destination folder when it's plugged in.
 
 ## Project Structure
 
@@ -16,6 +16,7 @@ scripts
 1. **Run the `register.ps1`** script to start monitoring for USB drive connection and automatically copy its contents to a destination folder.
 
 ```powershell
+cd .\scripts\
 .\register.ps1 -Destination "C:\Destination" -QuietMode
 ```
 
