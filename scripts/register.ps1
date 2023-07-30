@@ -9,14 +9,14 @@
     Specifies the destination folder where the files from the USB drive will be copied to.
 
 .PARAMETER ShowMessage
-    Set this to 0/1 to hide/show the message on file copy. Defaults to hidden.
+    Use this flag to display the message on file copy.
 
 .EXAMPLE
     .\USBFileCopy.ps1 -Destination "C:\Destination"
 
     This example runs the script, sets the destination folder "C:\Destination".
 .EXAMPLE
-    .\USBFileCopy.ps1 -Destination "C:\Destination" -ShowMessage 1
+    .\USBFileCopy.ps1 -Destination "C:\Destination" -ShowMessage
 
     This example runs the script, sets the destination folder "C:\Destination" and shows the message on file copy.
 
@@ -30,7 +30,7 @@ param (
 
     [Parameter(HelpMessage="Use this flag to show file copied message")]
     [Alias("show")]
-    [bool]$ShowMessage = $false
+    [switch]$ShowMessage
 )
 # Assigning the parameters to global variables for access within the event action script block
 $global:plug_n_copy_destination = $Destination
@@ -52,10 +52,13 @@ $USBConnectedAction = {
     # Get the connected USB drive using CIM
     $usbDrive = Get-CimInstance -Class Win32_LogicalDisk | Where-Object { $_.DriveType -eq 2 }
     if ($usbDrive) {
+        $uid = [System.Guid]::NewGuid().ToString()
         $sourcePath = Join-Path -Path $usbDrive.DeviceID -ChildPath "*"
-        Copy-Item -Path $sourcePath -Destination $destinationFolder -Recurse -Force
+        New-Item -Path $destinationFolder -Name ($usbDrive.VolumeName+"-"+$uid) -ItemType Directory -Force | Out-Null
+        $destinationPath = Join-Path -Path $destinationFolder -ChildPath ($usbDrive.VolumeName+"-"+$uid)
+        Copy-Item -Path $sourcePath -Destination $destinationPath -Recurse -Force
         if ($showMessage) {
-            Write-Host "Files copied from USB $($usbDrive.VolumeName) to $destinationFolder"
+            Write-Host "Files copied from USB $($usbDrive.VolumeName) to $destinationPath"
         }
     }
 }
