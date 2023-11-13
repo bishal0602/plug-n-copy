@@ -20,10 +20,10 @@ Plug-n-Copy
 
 ## Usage
 
-1. **Import the Plug-n-Copy module** by running the following command:
+1. **Install the Plug-n-Copy module from Powershell Gallery** by running the following command:
 
 ```powershell
-Import-Module -Name "Plug-n-Copy"
+Install-Module -Name "Plug-n-Copy"
 ```
 
 2. **Register USB monitoring and file copying**:
