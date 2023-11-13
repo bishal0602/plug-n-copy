@@ -1,9 +1,9 @@
 <#
 .SYNOPSIS
-    This script detects the connection of a USB drive and automatically copies its contents to a specified destination folder.
+    Register-PlugNCopy: Detects the connection of a USB drive and automatically copies its contents to a specified destination folder.
 
 .DESCRIPTION
-    The script registers an event to monitor USB drive connection using CIM and copies the files from the connected USB drive to the specified destination folder.
+    This function registers an event to monitor USB drive connection using CIM and copies the files from the connected USB drive to the specified destination folder.
 
 .PARAMETER Destination
     Specifies the destination folder where the files from the USB drive will be copied to.
@@ -12,26 +12,25 @@
     Use this flag to display the message on file copy.
 
 .EXAMPLE
-    .\USBFileCopy.ps1 -Destination "C:\Destination"
+    Register-PlugNCopy -Destination "C:\Destination"
 
-    This example runs the script, sets the destination folder "C:\Destination".
+    This example runs the function, sets the destination folder "C:\Destination".
 .EXAMPLE
-    .\USBFileCopy.ps1 -Destination "C:\Destination" -ShowMessage
+    Register-PlugNCopy -Destination "C:\Destination" -ShowMessage
 
-    This example runs the script, sets the destination folder "C:\Destination" and shows the message on file copy.
-
+    This example runs the function, sets the destination folder "C:\Destination" and shows the message on file copy.
 #>
+function Register-PlugNCopy {
+    [CmdletBinding()]
+    param (
+        [Parameter(Mandatory=$true, HelpMessage="Destination folder")]
+        [Alias("dest")]
+        [string]$Destination,
 
-[CmdletBinding()]
-param (
-    [Parameter(Mandatory=$true, HelpMessage="Destination folder")]
-    [Alias("dest")]
-    [string]$Destination,
-
-    [Parameter(HelpMessage="Use this flag to show file copied message")]
-    [Alias("show")]
-    [switch]$ShowMessage
-)
+        [Parameter(HelpMessage="Use this flag to show file copied message")]
+        [Alias("show")]
+        [switch]$ShowMessage
+    )
 # Assigning the parameters to global variables for access within the event action script block
 $global:plug_n_copy_destination = $Destination
 $global:plug_n_copy_show = $ShowMessage
@@ -48,7 +47,7 @@ Unregister-Event -SourceIdentifier NewUSBEvent -ErrorAction SilentlyContinue
 $USBConnectedAction = {
     $destinationFolder = $plug_n_copy_destination
     $showMessage = $plug_n_copy_show
-
+    
     # Get the connected USB drive using CIM
     $usbDrive = Get-CimInstance -Class Win32_LogicalDisk | Where-Object { $_.DriveType -eq 2 }
     if ($usbDrive) {
@@ -65,3 +64,8 @@ $USBConnectedAction = {
 
 # Register the CIM event to detect USB drive connection and invoke the action script block
 Register-CimIndicationEvent -Namespace "root\CIMV2" -Query "SELECT * FROM Win32_VolumeChangeEvent WHERE EventType = 2" -SourceIdentifier NewUSBEvent -Action $USBConnectedAction
+
+}
+
+# Register the function to make it available when the module is imported
+Export-ModuleMember -Function 'Register-PlugNCopy'

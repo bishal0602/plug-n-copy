@@ -1,44 +1,53 @@
 # Plug-n-Copy
 
-Plug-n-Copy is a powershell script that allows you to secretly copy files from a USB drive to a destination folder when it's plugged in.
+Plug-n-Copy allows you to secretly copy files from a USB drive to a destination folder when it's plugged in.
 
 ---
 
 ## Project Structure
 
 ```
-scripts
-├── register.ps1
-└── unregister.ps1
+Plug-n-Copy
+├── Scripts
+├   ├── Register-PlugNCopy.ps1
+├   ├── Unregister-PlugNCopy.ps1
+├── Plug-n-Copy.psd1
+├── Plug-n-Copy.psm1
+├── README.md
 ```
 
 ---
 
 ## Usage
 
-1. **Run the `register.ps1`** script to start monitoring for USB drive connection and automatically copy its contents to a destination folder.
+1. **Import the Plug-n-Copy module** by running the following command:
 
 ```powershell
-cd .\scripts\
-.\register.ps1 -Destination "C:\Destination"
+Import-Module -Name "Plug-n-Copy"
 ```
 
-The `-Destination` parameter specifies the destination folder where the files will be copied. The `-ShowMessage` flag can be used to display the file copied message on terminal.
-
-2. **Plug in a USB drive.** The script will detect the connection & copy the files to the specified destination folder.
-
-3. When you're done, **run the `unregister.ps1`** script to stop monitoring for USB drive connection & clean up some variables set by the script.
+2. **Register USB monitoring and file copying**:
 
 ```powershell
-.\unregister.ps1
+Register-PlugNCopy -Destination "C:\Destination"
 ```
 
-That's it! Enjoy using Plug-n-Copy!
+The `-Destination` parameter specifies the destination folder where the files will be copied. The `-ShowMessage` switch can be used to display the file copied message on the terminal.
 
----
+3. **Plug in a USB drive.** The module will detect the connection and copy the files to the specified destination folder.
 
-For more details, run
+4. When you're done, **unregister USB monitoring** and clean up variables:
 
 ```powershell
-Get-Help .\register.ps1 -Detailed
+Unregister-PlugNCopy
+```
+
+Enjoy using Plug-n-Copy!
+
+## Additional Details
+
+For more details on the parameters and usage, run:
+
+```powershell
+Get-Help Register-PlugNCopy -Detailed
 ```
